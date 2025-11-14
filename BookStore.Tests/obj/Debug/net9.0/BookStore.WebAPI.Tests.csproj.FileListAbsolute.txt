@@ -169,3 +169,4 @@ C:\Asp.Net Core Projects\Work\DotNet Core\BookStore.WebAPI\BookStore.WebAPI\Book
 C:\Asp.Net Core Projects\Work\DotNet Core\BookStore.WebAPI\BookStore.WebAPI\BookStore.Tests\obj\Debug\net9.0\BookStore.WebAPI.Tests.pdb
 C:\Asp.Net Core Projects\Work\DotNet Core\BookStore.WebAPI\BookStore.WebAPI\BookStore.Tests\obj\Debug\net9.0\BookStore.WebAPI.Tests.genruntimeconfig.cache
 C:\Asp.Net Core Projects\Work\DotNet Core\BookStore.WebAPI\BookStore.WebAPI\BookStore.Tests\obj\Debug\net9.0\ref\BookStore.WebAPI.Tests.dll
+C:\Asp.Net Core Projects\Work\DotNet Core\BookStore.WebAPI\BookStore.WebAPI\BookStore.Tests\obj\Debug\net9.0\BookStore.WebAPI.Tests.sourcelink.json
