@@ -27,6 +27,72 @@ public class UnitTest1
         // Assert
         Assert.NotNull(result);
     }
+        [Fact]
+        public async Task UpdateBook_ReturnsOk_WhenBookExists()
+        {
+            // Arrange
+            var bookId = 1;
+            var bookModel = new BookModel { BookId = bookId, Author = "Updated Author" };
+            var updatedBook = new BookModel { BookId = bookId, Author = "Updated Author" };
+
+            var bookServiceMock = new Mock<IBookService>();
+            bookServiceMock.Setup(s => s.UpdateBookAsync(bookModel)).ReturnsAsync(updatedBook);
+
+            var mapperMock = new Mock<IMapper>();
+            var loggerMock = new Mock<ILogger<BookStoreController>>();
+
+            var controller = new BookStoreController(mapperMock.Object, loggerMock.Object, bookServiceMock.Object);
+
+            // Act
+            var result = await controller.Put(bookId, bookModel);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnedModel = Assert.IsType<BookModel>(okResult.Value);
+            Assert.Equal("Updated Author", returnedModel.Author);
+        }
+
+        [Fact]
+        public async Task UpdateBook_ReturnsBadRequest_WhenIdMismatch()
+        {
+            // Arrange
+            var bookId = 1;
+            var bookModel = new BookModel { BookId = 2, Author = "Author" };
+
+            var bookServiceMock = new Mock<IBookService>();
+            var mapperMock = new Mock<IMapper>();
+            var loggerMock = new Mock<ILogger<BookStoreController>>();
+
+            var controller = new BookStoreController(mapperMock.Object, loggerMock.Object, bookServiceMock.Object);
+
+            // Act
+            var result = await controller.Put(bookId, bookModel);
+
+            // Assert
+            Assert.IsType<BadRequestResult>(result);
+        }
+
+        [Fact]
+        public async Task UpdateBook_ReturnsNotFound_WhenBookDoesNotExist()
+        {
+            // Arrange
+            var bookId = 1;
+            var bookModel = new BookModel { BookId = bookId, Author = "Author" };
+
+            var bookServiceMock = new Mock<IBookService>();
+            bookServiceMock.Setup(s => s.UpdateBookAsync(bookModel)).ReturnsAsync((BookModel)null);
+
+            var mapperMock = new Mock<IMapper>();
+            var loggerMock = new Mock<ILogger<BookStoreController>>();
+
+            var controller = new BookStoreController(mapperMock.Object, loggerMock.Object, bookServiceMock.Object);
+
+            // Act
+            var result = await controller.Put(bookId, bookModel);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
 
     [Fact]
     public async Task GetBookById_ReturnsOk_WhenBookExists()
