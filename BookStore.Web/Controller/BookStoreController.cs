@@ -4,28 +4,40 @@ using BookStore.WebAPI.Models;
 using BookStore.WebAPI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace BookStore.WebAPI.Controllers
 {
+    
+    
     [Route("api/[controller]")]
     [ApiController]
     public class BookStoreController : ControllerBase
     {
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
-
+        private readonly IMemoryCache _cache;
         private readonly IBookService _bookService;
-        public BookStoreController(IMapper mapper, ILogger<BookStoreController> logger, IBookService bookService)
+        public BookStoreController(IMapper mapper, ILogger<BookStoreController> logger, IBookService bookService, IMemoryCache cache)
         {
             _mapper = mapper;
             _logger = logger;
             _bookService = bookService;
+            _cache = cache;
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var books = await _bookService.GetAllBooks();
+            var books = await _cache.GetOrCreateAsync("books", async entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);
+                entry.SlidingExpiration = TimeSpan.FromMinutes(2); // Expires if idle
+                
+                // db call to get the data
+                return await _bookService.GetAllBooks();
+            });
+            
             return Ok(_mapper.Map<IEnumerable<BookModel>>(books));
         }
 

@@ -8,6 +8,17 @@ using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//Add In-Memory Caching
+builder.Services.AddMemoryCache();
+
+// Add Redis Distributed Caching
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("RedisConnection") ?? "localhost:6379";
+    options.InstanceName = "MyAppCache_";
+});
+
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

@@ -28,6 +28,48 @@ public class UnitTest1
         Assert.NotNull(result);
     }
         [Fact]
+        public async Task DeleteBook_ReturnsNoContent_WhenBookExists()
+        {
+            // Arrange
+            var bookId = 1;
+            var book = new Book { BookId = bookId, Author = "Author" };
+
+            var bookServiceMock = new Mock<IBookService>();
+            bookServiceMock.Setup(s => s.GetBookByIdAsync(bookId)).ReturnsAsync(book);
+            bookServiceMock.Setup(s => s.DeleteBookAsync(book)).Returns(Task.CompletedTask);
+
+            var mapperMock = new Mock<IMapper>();
+            var loggerMock = new Mock<ILogger<BookStoreController>>();
+
+            var controller = new BookStoreController(mapperMock.Object, loggerMock.Object, bookServiceMock.Object);
+
+            // Act
+            var result = await controller.Delete(bookId);
+
+            // Assert
+            Assert.IsType<NoContentResult>(result);
+        }
+
+        [Fact]
+        public async Task DeleteBook_ReturnsNotFound_WhenBookDoesNotExist()
+        {
+            // Arrange
+            var bookId = 99;
+            var bookServiceMock = new Mock<IBookService>();
+            bookServiceMock.Setup(s => s.GetBookByIdAsync(bookId)).ReturnsAsync((Book)null);
+
+            var mapperMock = new Mock<IMapper>();
+            var loggerMock = new Mock<ILogger<BookStoreController>>();
+
+            var controller = new BookStoreController(mapperMock.Object, loggerMock.Object, bookServiceMock.Object);
+
+            // Act
+            var result = await controller.Delete(bookId);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+        [Fact]
         public async Task UpdateBook_ReturnsOk_WhenBookExists()
         {
             // Arrange
